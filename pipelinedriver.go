@@ -13,79 +13,123 @@ func (this *mPipe) Add(cb func(d MongoDoc) MongoDoc) MongoPipeline {
 	return this
 }
 
-func (this *mPipe) Lookup(from string, local string, foreign string, as string) MongoPipeline {
+func (this *mPipe) Match(filters interface{}) MongoPipeline {
 	return this.Add(func(d MongoDoc) MongoDoc {
-		d.Doc("$lookup", func(d MongoDoc) MongoDoc {
-			d.
-				Add("from", from).
-				Add("localField", local).
-				Add("foreignField", foreign).
-				Add("as", as)
-			return d
-		})
-		return d
+		return d.Add("$match", filters)
 	})
+}
+
+func (this *mPipe) In(key string, v interface{}) MongoPipeline {
+	return this.Add(func(d MongoDoc) MongoDoc {
+		return d.Nested(key, "$in", v)
+	})
+}
+
+func (this *mPipe) Limit(limit int64) MongoPipeline {
+	if limit > 0 {
+		this.Add(func(d MongoDoc) MongoDoc {
+			return d.Add("$limit", limit)
+		})
+	}
+	return this
+}
+
+func (this *mPipe) Skip(skip int64) MongoPipeline {
+	if skip > 0 {
+		this.Add(func(d MongoDoc) MongoDoc {
+			return d.Add("$skip", skip)
+		})
+	}
+	return this
+}
+
+func (this *mPipe) Sort(sorts interface{}) MongoPipeline {
+	if sorts != nil {
+		this.Add(func(d MongoDoc) MongoDoc {
+			return d.Add("$sort", sorts)
+		})
+	}
+	return this
 }
 
 func (this *mPipe) Unwind(path string, prevNullAndEmpty bool) MongoPipeline {
 	return this.Add(func(d MongoDoc) MongoDoc {
-		d.Doc("$unwind", func(d MongoDoc) MongoDoc {
-			d.
+		return d.Doc("$unwind", func(d MongoDoc) MongoDoc {
+			return d.
 				Add("path", path).
 				Add("preserveNullAndEmptyArrays", prevNullAndEmpty)
-			return d
 		})
-		return d
+	})
+}
+
+func (this *mPipe) Lookup(from string, local string, foreign string, as string) MongoPipeline {
+	return this.Add(func(d MongoDoc) MongoDoc {
+		return d.Doc("$lookup", func(d MongoDoc) MongoDoc {
+			return d.
+				Add("from", from).
+				Add("localField", local).
+				Add("foreignField", foreign).
+				Add("as", as)
+		})
 	})
 }
 
 func (this *mPipe) Unwrap(field string, as string) MongoPipeline {
 	return this.Add(func(d MongoDoc) MongoDoc {
-		d.Doc("$addFields", func(d MongoDoc) MongoDoc {
-			d.
-				Nested(as, "$first", field)
-			return d
+		return d.Doc("$addFields", func(d MongoDoc) MongoDoc {
+			return d.Nested(as, "$first", field)
 		})
-		return d
 	})
+}
+
+func (this *mPipe) LoadRelation(from string, local string, foreign string, as string) MongoPipeline {
+	this.Add(func(d MongoDoc) MongoDoc {
+		return d.Doc("$lookup", func(d MongoDoc) MongoDoc {
+			return d.
+				Add("from", from).
+				Add("localField", local).
+				Add("foreignField", foreign).
+				Add("as", as)
+		})
+	})
+	this.Add(func(d MongoDoc) MongoDoc {
+		return d.Doc("$addFields", func(d MongoDoc) MongoDoc {
+			return d.Nested(as, "$first", "$"+as)
+		})
+	})
+	return this
 }
 
 func (this *mPipe) Group(cb func(d MongoDoc) MongoDoc) MongoPipeline {
 	return this.Add(func(d MongoDoc) MongoDoc {
-		d.Doc("$group", cb)
-		return d
+		return d.Doc("$group", cb)
 	})
 }
 
 func (this *mPipe) ReplaceRoot(v interface{}) MongoPipeline {
 	return this.Add(func(d MongoDoc) MongoDoc {
-		d.Doc("$replaceRoot", func(d MongoDoc) MongoDoc {
-			d.Add("newRoot", v)
-			return d
+		return d.Doc("$replaceRoot", func(d MongoDoc) MongoDoc {
+			return d.Add("newRoot", v)
 		})
-		return d
 	})
 }
 
 func (this *mPipe) MergeRoot(fields ...interface{}) MongoPipeline {
 	return this.Add(func(d MongoDoc) MongoDoc {
-		d.Doc("$replaceRoot", func(d MongoDoc) MongoDoc {
-			d.Nested("newRoot", "$mergeObjects", fields)
-			return d
+		return d.Doc("$replaceRoot", func(d MongoDoc) MongoDoc {
+			return d.Nested("newRoot", "$mergeObjects", fields)
 		})
-		return d
 	})
 }
 
 func (this *mPipe) UnProject(fields ...string) MongoPipeline {
 	return this.Add(func(d MongoDoc) MongoDoc {
-		d.Doc("$project", func(d MongoDoc) MongoDoc {
+		return d.Doc("$project", func(d MongoDoc) MongoDoc {
 			for _, v := range fields {
 				d.Add(v, 0)
 			}
 			return d
 		})
-		return d
 	})
 }
 

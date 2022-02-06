@@ -20,6 +20,108 @@ Check if object id is valid and not zero.
 IsValidObjectId(id *primitive.ObjectID) bool
 ```
 
+### FindOption
+
+Generate find option with sorts params.
+
+```go
+FindOption(sort interface{}, skip int64, limit int64) *options.FindOptions
+```
+
+### AggregateOption
+
+Generate aggregation options.
+
+```go
+AggregateOption() *options.AggregateOptions
+```
+
+### In
+
+Generate $in map {k: {$in: v}}.
+
+```go
+In(k string, v interface{}) primitive.M
+```
+
+### Set
+
+Generate simple set map  {$set: v}.
+
+```go
+Set(v string) primitive.M
+```
+
+### SetNested
+
+Generate nested set map {$set: {k: v}}.
+
+```go
+SetNested(k string, v string) primitive.M
+```
+
+### Match
+
+Generate nested set map {$match: v}.
+
+```go
+Match(v string) primitive.M
+```
+
+## Base Model
+
+Base model is a parent model with timestamp and utility functions.
+
+**Note**: set model to inline for insert timestamps in document root.
+
+```go
+// Usage:
+import "github.com/bopher/mongoutils"
+type Person struct{
+ mongoutils.Model  `bson:",inline"`
+}
+
+// override methods
+func (this Person) IsDeletable() bool{
+    return true
+}
+```
+
+### Available methods
+
+```go
+// IsEditable check if document is editable
+func (this Model) IsEditable() bool {
+ return true
+}
+
+// IsDeletable check if document is deletable
+func (this Model) IsDeletable() bool {
+ return false
+}
+
+// Cleanup document before save
+func (this *Model) Cleanup() {}
+
+// PrepareInsert document before save
+func (this *Model) PrepareInsert() {
+ this.CreatedAt = time.Now().UTC()
+}
+
+// PrepareUpdate document before save
+//
+// in ghost mode UpdatedAt field not changed
+func (this *Model) PrepareUpdate(ghost bool) {
+ if !ghost {
+  now := time.Now().UTC()
+  this.UpdatedAt = &now
+ }
+}
+
+// PrepareDelete update/delete related document before delete
+func (this *Model) PrepareDelete() {}
+```
+
 ## Doc Builder
 
 Document builder is a helper type for creating mongo document (`primitive.D`) with _chained_ methods.
@@ -197,24 +299,64 @@ pipe.Add(func(d mongoutils.MongoDoc) mongoutils.MongoDoc{
 }) // -> [ {"$match": { "name": "John"}} ]
 ```
 
-#### Lookup
+### Match
 
-Add $lookup stage.
+Add $match stage.
 
 ```go
 // Signature:
-Lookup(from string, local string, foreign string, as string) MongoPipeline
+Match(filters interface{}) MongoPipeline
 
 // Example:
-pipe.Lookup("users", "user_id", "_id", "user")
-// -> [
-//     {"$lookup": {
-//         "from": "users",
-//         "localField": "user_id",
-//         "foreignField": "_id",
-//         "as": "user"
-//     }}
-// ]
+pipe.Match(v)
+```
+
+### In
+
+Add $in stage.
+
+```go
+// Signature:
+In(key string, v interface{}) MongoPipeline
+
+// Example:
+pipe.In("status", statuses)
+```
+
+### Limit
+
+Add $limit stage (ignore negative and zero value).
+
+```go
+// Signature:
+Limit(limit int64) MongoPipeline
+
+// Example:
+pipe.Limit(100)
+```
+
+### Skip
+
+Add $skip stage (ignore negative and zero value).
+
+```go
+// Signature:
+Skip(skip int64) MongoPipeline
+
+// Example:
+pipe.Skip(25)
+```
+
+### Sort
+
+Add $sort stage (ignore nil value).
+
+```go
+// Signature:
+Sort(sorts interface{}) MongoPipeline
+
+// Example:
+pipe.Sort(primitive.M{"username": 1})
 ```
 
 #### Unwind
@@ -231,6 +373,26 @@ pipe.Unwind("services", true)
 //     {"$unwind": {
 //         "path": "services",
 //         "preserveNullAndEmptyArrays": true,
+//     }}
+// ]
+```
+
+#### Lookup
+
+Add $lookup stage.
+
+```go
+// Signature:
+Lookup(from string, local string, foreign string, as string) MongoPipeline
+
+// Example:
+pipe.Lookup("users", "user_id", "_id", "user")
+// -> [
+//     {"$lookup": {
+//         "from": "users",
+//         "localField": "user_id",
+//         "foreignField": "_id",
+//         "as": "user"
 //     }}
 // ]
 ```
@@ -256,6 +418,18 @@ pipe.
 //     }},
 //     { "$addFields": { "user" : { "$first": "$__user" } } }
 // ]
+```
+
+### LoadRelation
+
+Load related document using `$lookup` and `$addField` (Lookup and Unwrap method mix).
+
+```go
+// Signature:
+LoadRelation(from string, local string, foreign string, as string) MongoPipeline
+
+// Example:
+pipe.LoadRelation("users", "user_id", "_id", "user")
 ```
 
 #### Group

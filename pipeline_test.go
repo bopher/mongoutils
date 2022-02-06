@@ -22,14 +22,54 @@ func TestPipeline(t *testing.T) {
 		t.Fatal("fail Add")
 	}
 
-	// Lookup
-	v, err = pretty(mongoutils.NewPipe().Lookup("users", "user_id", "_id", "user").Build())
+	// Match
+	v, err = pretty(mongoutils.NewPipe().Match("TEST").Build())
 	if err != nil {
 		t.Fatal(err)
 	}
-	if v != `[[{"Key":"$lookup","Value":[{"Key":"from","Value":"users"},{"Key":"localField","Value":"user_id"},{"Key":"foreignField","Value":"_id"},{"Key":"as","Value":"user"}]}]]` {
+	if v != `[[{"Key":"$match","Value":"TEST"}]]` {
 		t.Log(v)
-		t.Fatal("fail Lookup")
+		t.Fatal("fail Match")
+	}
+
+	// In
+	v, err = pretty(mongoutils.NewPipe().In("name", []string{"a", "b", "c"}).Build())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v != `[[{"Key":"name","Value":{"$in":["a","b","c"]}}]]` {
+		t.Log(v)
+		t.Fatal("fail In")
+	}
+
+	// Limit
+	v, err = pretty(mongoutils.NewPipe().Limit(4).Build())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v != `[[{"Key":"$limit","Value":4}]]` {
+		t.Log(v)
+		t.Fatal("fail Limit")
+	}
+
+	// Skip
+	v, err = pretty(mongoutils.NewPipe().Skip(4).Build())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v != `[[{"Key":"$skip","Value":4}]]` {
+		t.Log(v)
+		t.Fatal("fail Skip")
+	}
+
+	// Sort
+	v, err = pretty(mongoutils.NewPipe().Sort("sorts...").Build())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v != `[[{"Key":"$sort","Value":"sorts..."}]]` {
+		t.Log(v)
+		t.Fatal("fail Sort")
 	}
 
 	// Unwind
@@ -42,6 +82,16 @@ func TestPipeline(t *testing.T) {
 		t.Fatal("fail Unwind")
 	}
 
+	// Lookup
+	v, err = pretty(mongoutils.NewPipe().Lookup("users", "user_id", "_id", "user").Build())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v != `[[{"Key":"$lookup","Value":[{"Key":"from","Value":"users"},{"Key":"localField","Value":"user_id"},{"Key":"foreignField","Value":"_id"},{"Key":"as","Value":"user"}]}]]` {
+		t.Log(v)
+		t.Fatal("fail Lookup")
+	}
+
 	// Unwrap
 	v, err = pretty(mongoutils.NewPipe().Unwrap("_user", "user").Build())
 	if err != nil {
@@ -50,6 +100,16 @@ func TestPipeline(t *testing.T) {
 	if v != `[[{"Key":"$addFields","Value":[{"Key":"user","Value":{"$first":"_user"}}]}]]` {
 		t.Log(v)
 		t.Fatal("fail Unwrap")
+	}
+
+	// LoadRelation
+	v, err = pretty(mongoutils.NewPipe().LoadRelation("users", "user_id", "_id", "user").Build())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v != `[[{"Key":"$lookup","Value":[{"Key":"from","Value":"users"},{"Key":"localField","Value":"user_id"},{"Key":"foreignField","Value":"_id"},{"Key":"as","Value":"user"}]}],[{"Key":"$addFields","Value":[{"Key":"user","Value":{"$first":"$user"}}]}]]` {
+		t.Log(v)
+		t.Fatal("fail LoadRelation")
 	}
 
 	// Group
