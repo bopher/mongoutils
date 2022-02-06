@@ -49,7 +49,7 @@ In(k string, v interface{}) primitive.M
 Generate simple set map  {$set: v}.
 
 ```go
-Set(v string) primitive.M
+Set(v interface{}) primitive.M
 ```
 
 ### SetNested
@@ -57,7 +57,7 @@ Set(v string) primitive.M
 Generate nested set map {$set: {k: v}}.
 
 ```go
-SetNested(k string, v string) primitive.M
+SetNested(k string, v interface{}) primitive.M
 ```
 
 ### Match
@@ -65,7 +65,7 @@ SetNested(k string, v string) primitive.M
 Generate nested set map {$match: v}.
 
 ```go
-Match(v string) primitive.M
+Match(v interface{}) primitive.M
 ```
 
 ## Base Model

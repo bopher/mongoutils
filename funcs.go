@@ -10,16 +10,16 @@ func In(k string, v interface{}) primitive.M {
 }
 
 // Set generate simple set map  {$set: v}
-func Set(v string) primitive.M {
+func Set(v interface{}) primitive.M {
 	return primitive.M{"$set": v}
 }
 
 // SetNested generate nested set map {$set: {k: v}}
-func SetNested(k string, v string) primitive.M {
+func SetNested(k string, v interface{}) primitive.M {
 	return primitive.M{"$set": primitive.M{k: v}}
 }
 
 // Match generate nested set map {$match: v}
-func Match(v string) primitive.M {
+func Match(v interface{}) primitive.M {
 	return primitive.M{"$match": v}
 }
