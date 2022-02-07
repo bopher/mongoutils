@@ -38,7 +38,7 @@ AggregateOption() *options.AggregateOptions
 
 ### In
 
-Generate $in map {k: {$in: v}}.
+Generate $in map `{k: {$in: v}}`.
 
 ```go
 In(k string, v interface{}) primitive.M
@@ -46,7 +46,7 @@ In(k string, v interface{}) primitive.M
 
 ### Set
 
-Generate simple set map  {$set: v}.
+Generate simple set map  `{$set: v}`.
 
 ```go
 Set(v interface{}) primitive.M
@@ -54,7 +54,7 @@ Set(v interface{}) primitive.M
 
 ### SetNested
 
-Generate nested set map {$set: {k: v}}.
+Generate nested set map `{$set: {k: v}}`.
 
 ```go
 SetNested(k string, v interface{}) primitive.M
@@ -62,10 +62,18 @@ SetNested(k string, v interface{}) primitive.M
 
 ### Match
 
-Generate nested set map {$match: v}.
+Generate nested set map `{$match: v}`.
 
 ```go
 Match(v interface{}) primitive.M
+```
+
+### Regex
+
+Generate Regex map `{ "a": { pattern: "John.*", options: "i" } }`.
+
+```go
+Regex(k string, pattern string, opt string) primitive.M
 ```
 
 ## Base Model

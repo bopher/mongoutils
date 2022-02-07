@@ -23,3 +23,8 @@ func SetNested(k string, v interface{}) primitive.M {
 func Match(v interface{}) primitive.M {
 	return primitive.M{"$match": v}
 }
+
+// Regex generate Regex map { "a": { pattern: "John.*", options: "i" } }
+func Regex(k string, pattern string, opt string) primitive.M {
+	return primitive.M{k: primitive.Regex{Pattern: pattern, Options: opt}}
+}
