@@ -78,9 +78,9 @@ Regex(k string, pattern string, opt string) primitive.M
 
 ## Base Model
 
-Base model is a parent model with timestamp and utility functions.
+Base model can used as modal parent. This model comes with timestamp and utility functions.
 
-**Note**: set model to inline for insert timestamps in document root.
+**Note**: Set model bson tag to `inline` for insert timestamps in document root.
 
 ```go
 // Usage:
@@ -99,36 +99,44 @@ func (this Person) IsDeletable() bool{
 
 ```go
 // IsEditable check if document is editable
-func (this Model) IsEditable() bool {
- return true
-}
+//
+// by default returns true
+func (this Model) IsEditable() bool {}
 
 // IsDeletable check if document is deletable
-func (this Model) IsDeletable() bool {
- return false
-}
+//
+// by default returns false
+func (this Model) IsDeletable() bool {}
+
+// BeforeInsert function to call before insert
+func (this *Model) BeforeInsert() {}
+
+// AfterInsert function to call after insert
+func (this *Model) AfterInsert() {}
+
+// BeforeUpdate function to call before update
+func (this *Model) BeforeUpdate() {}
+
+// AfterUpdate function to call after update
+func (this *Model) AfterUpdate() {}
+
+// BeforeDelete function to call before delete
+func (this *Model) BeforeDelete() {}
+
+// AfterDelete function to call after delete
+func (this *Model) AfterDelete() {}
 
 // Cleanup document before save
-func (this *Model) Cleanup() {}
-
-// PrepareInsert document before save
-func (this *Model) PrepareInsert() {
- this.CreatedAt = time.Now().UTC()
-}
-
-// PrepareUpdate document before save
 //
-// in ghost mode UpdatedAt field not changed
-func (this *Model) PrepareUpdate(ghost bool) {
- if !ghost {
-  now := time.Now().UTC()
-  this.UpdatedAt = &now
- }
-}
-
-// PrepareDelete update/delete related document before delete
-func (this *Model) PrepareDelete() {}
+// e.g set relation document to nil for ignore saving
+func (this *Model) Cleanup() {}
 ```
+
+### Required Methods
+
+Two `PrepareInsert` and `PrepareUpdate` must called before save model to database.
+
+**Note**: if `true` passed to `PrepareUpdate` method, `updated_at` method not updated.
 
 ## Doc Builder
 
