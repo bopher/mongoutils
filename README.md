@@ -112,19 +112,19 @@ func (this Model) IsDeletable() bool {}
 func (this *Model) BeforeInsert() {}
 
 // AfterInsert function to call after insert
-func (this *Model) AfterInsert() {}
+func (this Model) AfterInsert() {}
 
 // BeforeUpdate function to call before update
 func (this *Model) BeforeUpdate() {}
 
 // AfterUpdate function to call after update
-func (this *Model) AfterUpdate() {}
+func (this Model) AfterUpdate() {}
 
 // BeforeDelete function to call before delete
 func (this *Model) BeforeDelete() {}
 
 // AfterDelete function to call after delete
-func (this *Model) AfterDelete() {}
+func (this Model) AfterDelete() {}
 
 // Cleanup document before save
 //
