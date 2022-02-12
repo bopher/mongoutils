@@ -10,12 +10,16 @@ type MongoDoc interface {
 	Doc(k string, cb func(d MongoDoc) MongoDoc) MongoDoc
 	// Array add new element with array value
 	Array(k string, v ...interface{}) MongoDoc
+	// DocArray add new array element with doc
+	DocArray(k string, cb func(d MongoDoc) MongoDoc) MongoDoc
 	// Nested add new nested element
 	Nested(root string, k string, v interface{}) MongoDoc
 	// NestedDoc add new nested element with doc value
 	NestedDoc(root string, k string, cb func(d MongoDoc) MongoDoc) MongoDoc
 	// NestedArray add new nested element with array value
 	NestedArray(root string, k string, v ...interface{}) MongoDoc
+	// NestedDocArray add new nested array element with doc
+	NestedDocArray(root string, k string, cb func(d MongoDoc) MongoDoc) MongoDoc
 	// Regex add new element with regex value
 	Regex(k string, pattern string, opt string) MongoDoc
 	// Map creates a map from the elements of the Doc

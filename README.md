@@ -36,6 +36,74 @@ Generate aggregation options.
 AggregateOption() *options.AggregateOptions
 ```
 
+### Array
+
+Generate `primitive.A` from parameters.
+
+```go
+Array(args ...interface{}) primitive.A
+```
+
+### Map
+
+Generate `primitive.M` from parameters. Parameters count must be even.
+
+```go
+// Signature:
+Map(args ...interface{}) primitive.M
+
+// Example:
+mongoutils.Map("name", "John", "age", 23) // { "name": "John", "age": 23 }
+```
+
+### Maps
+
+Generate `[]primitive.M` from parameters. Parameters count must be even.
+
+```go
+// Signature:
+Maps(args ...interface{}) []primitive.M
+
+// Example:
+mongoutils.Maps("name", "John", "age", 23) // [{ "name": "John" }, { "age": 23 }]
+```
+
+### Doc
+
+Generate primitive.D from parameters. Parameters count must be even.
+
+```go
+// Signature:
+Doc(args ...interface{}) primitive.D
+
+// Example:
+mongoutils.Doc("name", "John", "age", 23) // { "name": "John", "age": 23 }
+```
+
+### Regex
+
+Generate mongo `Regex` doc.
+
+```go
+// Signature:
+Regex(pattern string, opt string) primitive.Regex
+
+// Example:
+mongoutils.Regex("John.*", "i") // { pattern: "John.*", options: "i" }
+```
+
+### RegexFor
+
+Generate map with regex parameter.
+
+```go
+// Signature
+RegexFor(k string, pattern string, opt string) primitive.M
+
+// Example:
+mongoutils.RegexFor("name", "John.*", "i") // { "name": { pattern: "John.*", options: "i" } }
+```
+
 ### In
 
 Generate $in map `{k: {$in: v}}`.
@@ -66,14 +134,6 @@ Generate nested set map `{$match: v}`.
 
 ```go
 Match(v interface{}) primitive.M
-```
-
-### Regex
-
-Generate Regex map `{ "a": { pattern: "John.*", options: "i" } }`.
-
-```go
-Regex(k string, pattern string, opt string) primitive.M
 ```
 
 ## Base Model
@@ -199,6 +259,21 @@ Array(k string, v ...interface{}) MongoDoc
 doc.Array("skills", "javascript", "golang") // -> { "skills": ["javascript", "golang"] }
 ```
 
+#### DocArray
+
+Add new array element with doc child.
+
+```go
+// Signature:
+DocArray(k string, cb func(d MongoDoc) MongoDoc) MongoDoc
+
+// Example:
+doc.DocArray("$match", func(d mongoutils.MongoDoc) mongoutils.MongoDoc {
+    return d.Add("name", "John")
+            Add("Family", "Doe")
+}) // -> { "$match": [{"name": "John"}, {"Family": "Doe"}] }
+```
+
 #### Nested
 
 Add new nested element.
@@ -238,6 +313,21 @@ NestedArray(root string, k string, v ...interface{}) MongoDoc
 
 // Example:
 doc.NestedArray("skill", "$in", "mongo", "golang") // -> { "skill": { "$in": ["mongo", "golang"] } }
+```
+
+#### NestedDocArray
+
+Add new nested array element with doc
+
+```go
+// Signature:
+NestedDocArray(root string, k string, cb func(d MongoDoc) MongoDoc) MongoDoc
+
+// Example:
+doc.NestedDocArray("name", "$match", func(d mongoutils.MongoDoc) mongoutils.MongoDoc {
+    return d.Add("first", "John")
+            Add("last", "Doe")
+}) // -> { "name" : {"$match": [{"name": "John"}, {"last": "Doe"}] } }
 ```
 
 #### Regex

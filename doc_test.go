@@ -28,8 +28,7 @@ func TestDoc(t *testing.T) {
 
 	// Doc
 	v, err = pretty(mongoutils.NewDoc().Doc("$set", func(d mongoutils.MongoDoc) mongoutils.MongoDoc {
-		d.Add("name", "Jack")
-		return d
+		return d.Add("name", "Jack")
 	}).Map())
 	if err != nil {
 		t.Fatal(err)
@@ -47,6 +46,19 @@ func TestDoc(t *testing.T) {
 	if v != `{"skills":["js","go","mongo"]}` {
 		t.Log(v)
 		t.Fatal("fail Array")
+	}
+
+	// DocArray
+	v, err = pretty(mongoutils.NewDoc().DocArray("pipeline", func(d mongoutils.MongoDoc) mongoutils.MongoDoc {
+		return d.Add("name", "Jack").
+			Add("family", "Ma")
+	}).Map())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v != `{"pipeline":[{"name":"Jack"},{"family":"Ma"}]}` {
+		t.Log(v)
+		t.Fatal("fail DocArray")
 	}
 
 	// Nested
@@ -79,6 +91,19 @@ func TestDoc(t *testing.T) {
 	if v != `{"skill":{"$in":["js","mongo"]}}` {
 		t.Log(v)
 		t.Fatal("fail NestedArray")
+	}
+
+	// NestedDocArray
+	v, err = pretty(mongoutils.NewDoc().NestedDocArray("let", "name", func(d mongoutils.MongoDoc) mongoutils.MongoDoc {
+		return d.Add("name", "Jack").
+			Add("family", "Ma")
+	}).Map())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v != `{"let":{"name":[{"name":"Jack"},{"family":"Ma"}]}}` {
+		t.Log(v)
+		t.Fatal("fail NestedDocArray")
 	}
 
 	// Regex

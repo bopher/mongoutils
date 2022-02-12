@@ -21,6 +21,10 @@ func (this *mDoc) Array(k string, v ...interface{}) MongoDoc {
 	return this.Add(k, v)
 }
 
+func (this *mDoc) DocArray(k string, cb func(d MongoDoc) MongoDoc) MongoDoc {
+	return this.Array(k, arrayOf(cb(NewDoc()))...)
+}
+
 func (this *mDoc) Nested(root string, k string, v interface{}) MongoDoc {
 	return this.Add(root, primitive.M{k: v})
 }
@@ -33,6 +37,10 @@ func (this *mDoc) NestedArray(root string, k string, v ...interface{}) MongoDoc 
 	return this.Add(root, primitive.M{k: v})
 }
 
+func (this *mDoc) NestedDocArray(root string, k string, cb func(d MongoDoc) MongoDoc) MongoDoc {
+	return this.NestedArray(root, k, arrayOf(cb(NewDoc()))...)
+}
+
 func (this *mDoc) Regex(k string, pattern string, opt string) MongoDoc {
 	return this.Add(k, primitive.Regex{Pattern: pattern, Options: opt})
 }
@@ -43,4 +51,13 @@ func (this mDoc) Map() primitive.M {
 
 func (this mDoc) Build() primitive.D {
 	return this.data
+}
+
+func arrayOf(d MongoDoc) []interface{} {
+	data := d.Build()
+	res := make([]interface{}, len(data))
+	for i, e := range data {
+		res[i] = primitive.M{e.Key: e.Value}
+	}
+	return res
 }
