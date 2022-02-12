@@ -41,7 +41,7 @@ AggregateOption() *options.AggregateOptions
 Generate $in map `{k: {$in: v}}`.
 
 ```go
-In(k string, v interface{}) primitive.M
+In(k string, v ...interface{}) primitive.M
 ```
 
 ### Set

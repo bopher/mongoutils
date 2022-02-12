@@ -5,7 +5,7 @@ import (
 )
 
 // In generate $in map {k: {$in: v}}
-func In(k string, v interface{}) primitive.M {
+func In(k string, v ...interface{}) primitive.M {
 	return primitive.M{k: primitive.M{"$in": v}}
 }
 
