@@ -8,52 +8,52 @@ type mPipe struct {
 	data mongo.Pipeline
 }
 
-func (this *mPipe) Add(cb func(d MongoDoc) MongoDoc) MongoPipeline {
-	this.data = append(this.data, cb(NewDoc()).Build())
-	return this
+func (me *mPipe) Add(cb func(d MongoDoc) MongoDoc) MongoPipeline {
+	me.data = append(me.data, cb(NewDoc()).Build())
+	return me
 }
 
-func (this *mPipe) Match(filters interface{}) MongoPipeline {
-	return this.Add(func(d MongoDoc) MongoDoc {
+func (me *mPipe) Match(filters interface{}) MongoPipeline {
+	return me.Add(func(d MongoDoc) MongoDoc {
 		return d.Add("$match", filters)
 	})
 }
 
-func (this *mPipe) In(key string, v interface{}) MongoPipeline {
-	return this.Add(func(d MongoDoc) MongoDoc {
+func (me *mPipe) In(key string, v interface{}) MongoPipeline {
+	return me.Add(func(d MongoDoc) MongoDoc {
 		return d.Nested(key, "$in", v)
 	})
 }
 
-func (this *mPipe) Limit(limit int64) MongoPipeline {
+func (me *mPipe) Limit(limit int64) MongoPipeline {
 	if limit > 0 {
-		this.Add(func(d MongoDoc) MongoDoc {
+		me.Add(func(d MongoDoc) MongoDoc {
 			return d.Add("$limit", limit)
 		})
 	}
-	return this
+	return me
 }
 
-func (this *mPipe) Skip(skip int64) MongoPipeline {
+func (me *mPipe) Skip(skip int64) MongoPipeline {
 	if skip > 0 {
-		this.Add(func(d MongoDoc) MongoDoc {
+		me.Add(func(d MongoDoc) MongoDoc {
 			return d.Add("$skip", skip)
 		})
 	}
-	return this
+	return me
 }
 
-func (this *mPipe) Sort(sorts interface{}) MongoPipeline {
+func (me *mPipe) Sort(sorts interface{}) MongoPipeline {
 	if sorts != nil {
-		this.Add(func(d MongoDoc) MongoDoc {
+		me.Add(func(d MongoDoc) MongoDoc {
 			return d.Add("$sort", sorts)
 		})
 	}
-	return this
+	return me
 }
 
-func (this *mPipe) Unwind(path string, prevNullAndEmpty bool) MongoPipeline {
-	return this.Add(func(d MongoDoc) MongoDoc {
+func (me *mPipe) Unwind(path string, prevNullAndEmpty bool) MongoPipeline {
+	return me.Add(func(d MongoDoc) MongoDoc {
 		return d.Doc("$unwind", func(d MongoDoc) MongoDoc {
 			return d.
 				Add("path", path).
@@ -62,8 +62,8 @@ func (this *mPipe) Unwind(path string, prevNullAndEmpty bool) MongoPipeline {
 	})
 }
 
-func (this *mPipe) Lookup(from string, local string, foreign string, as string) MongoPipeline {
-	return this.Add(func(d MongoDoc) MongoDoc {
+func (me *mPipe) Lookup(from string, local string, foreign string, as string) MongoPipeline {
+	return me.Add(func(d MongoDoc) MongoDoc {
 		return d.Doc("$lookup", func(d MongoDoc) MongoDoc {
 			return d.
 				Add("from", from).
@@ -74,16 +74,16 @@ func (this *mPipe) Lookup(from string, local string, foreign string, as string) 
 	})
 }
 
-func (this *mPipe) Unwrap(field string, as string) MongoPipeline {
-	return this.Add(func(d MongoDoc) MongoDoc {
+func (me *mPipe) Unwrap(field string, as string) MongoPipeline {
+	return me.Add(func(d MongoDoc) MongoDoc {
 		return d.Doc("$addFields", func(d MongoDoc) MongoDoc {
 			return d.Nested(as, "$first", field)
 		})
 	})
 }
 
-func (this *mPipe) LoadRelation(from string, local string, foreign string, as string) MongoPipeline {
-	this.Add(func(d MongoDoc) MongoDoc {
+func (me *mPipe) LoadRelation(from string, local string, foreign string, as string) MongoPipeline {
+	me.Add(func(d MongoDoc) MongoDoc {
 		return d.Doc("$lookup", func(d MongoDoc) MongoDoc {
 			return d.
 				Add("from", from).
@@ -92,38 +92,38 @@ func (this *mPipe) LoadRelation(from string, local string, foreign string, as st
 				Add("as", as)
 		})
 	})
-	this.Add(func(d MongoDoc) MongoDoc {
+	me.Add(func(d MongoDoc) MongoDoc {
 		return d.Doc("$addFields", func(d MongoDoc) MongoDoc {
 			return d.Nested(as, "$first", "$"+as)
 		})
 	})
-	return this
+	return me
 }
 
-func (this *mPipe) Group(cb func(d MongoDoc) MongoDoc) MongoPipeline {
-	return this.Add(func(d MongoDoc) MongoDoc {
+func (me *mPipe) Group(cb func(d MongoDoc) MongoDoc) MongoPipeline {
+	return me.Add(func(d MongoDoc) MongoDoc {
 		return d.Doc("$group", cb)
 	})
 }
 
-func (this *mPipe) ReplaceRoot(v interface{}) MongoPipeline {
-	return this.Add(func(d MongoDoc) MongoDoc {
+func (me *mPipe) ReplaceRoot(v interface{}) MongoPipeline {
+	return me.Add(func(d MongoDoc) MongoDoc {
 		return d.Doc("$replaceRoot", func(d MongoDoc) MongoDoc {
 			return d.Add("newRoot", v)
 		})
 	})
 }
 
-func (this *mPipe) MergeRoot(fields ...interface{}) MongoPipeline {
-	return this.Add(func(d MongoDoc) MongoDoc {
+func (me *mPipe) MergeRoot(fields ...interface{}) MongoPipeline {
+	return me.Add(func(d MongoDoc) MongoDoc {
 		return d.Doc("$replaceRoot", func(d MongoDoc) MongoDoc {
 			return d.Nested("newRoot", "$mergeObjects", fields)
 		})
 	})
 }
 
-func (this *mPipe) UnProject(fields ...string) MongoPipeline {
-	return this.Add(func(d MongoDoc) MongoDoc {
+func (me *mPipe) UnProject(fields ...string) MongoPipeline {
+	return me.Add(func(d MongoDoc) MongoDoc {
 		return d.Doc("$project", func(d MongoDoc) MongoDoc {
 			for _, v := range fields {
 				d.Add(v, 0)
@@ -133,6 +133,6 @@ func (this *mPipe) UnProject(fields ...string) MongoPipeline {
 	})
 }
 
-func (this mPipe) Build() mongo.Pipeline {
-	return this.data
+func (me mPipe) Build() mongo.Pipeline {
+	return me.data
 }

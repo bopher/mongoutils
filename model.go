@@ -1,6 +1,9 @@
 package mongoutils
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 // base model with timestamp and util functions
 type Model struct {
@@ -11,51 +14,51 @@ type Model struct {
 // IsEditable check if document is editable
 //
 // by default returns true
-func (this Model) IsEditable() bool {
+func (me Model) IsEditable() bool {
 	return true
 }
 
 // IsDeletable check if document is deletable
 //
 // by default returns false
-func (this Model) IsDeletable() bool {
+func (me Model) IsDeletable() bool {
 	return false
 }
 
 // BeforeInsert function to call before insert
-func (this *Model) BeforeInsert() {}
+func (me *Model) BeforeInsert() {}
 
 // AfterInsert function to call after insert
-func (this Model) AfterInsert() {}
+func (me Model) AfterInsert(ctx context.Context) {}
 
 // BeforeUpdate function to call before update
-func (this *Model) BeforeUpdate() {}
+func (me *Model) BeforeUpdate() {}
 
 // AfterUpdate function to call after update
-func (this Model) AfterUpdate() {}
+func (me Model) AfterUpdate(ctx context.Context) {}
 
 // BeforeDelete function to call before delete
-func (this *Model) BeforeDelete() {}
+func (me *Model) BeforeDelete() {}
 
 // AfterDelete function to call after delete
-func (this Model) AfterDelete() {}
+func (me Model) AfterDelete(ctx context.Context) {}
 
 // Cleanup document before save
 //
 // e.g set relation document to nil for ignore saving
-func (this *Model) Cleanup() {}
+func (me *Model) Cleanup() {}
 
 // PrepareInsert fill created_at before insert
-func (this *Model) PrepareInsert() {
-	this.CreatedAt = time.Now().UTC()
+func (me *Model) PrepareInsert() {
+	me.CreatedAt = time.Now().UTC()
 }
 
 // PrepareUpdate fill updated_at before insert
 //
 // in ghost mode updated_at field not changed
-func (this *Model) PrepareUpdate(ghost bool) {
+func (me *Model) PrepareUpdate(ghost bool) {
 	if !ghost {
 		now := time.Now().UTC()
-		this.UpdatedAt = &now
+		me.UpdatedAt = &now
 	}
 }

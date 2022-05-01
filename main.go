@@ -3,6 +3,8 @@ package mongoutils
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readconcern"
+	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 )
 
 // NewPipe new mongo pipe builder
@@ -46,4 +48,12 @@ func FindOption(sort interface{}, skip int64, limit int64) *options.FindOptions 
 func AggregateOption() *options.AggregateOptions {
 	return new(options.AggregateOptions).
 		SetAllowDiskUse(true)
+}
+
+// TxOption generate transaction option with majority write and snapshot read
+func TxOption() *options.TransactionOptions {
+	return options.
+		Transaction().
+		SetWriteConcern(writeconcern.New(writeconcern.WMajority())).
+		SetReadConcern(readconcern.Snapshot())
 }

@@ -36,6 +36,14 @@ Generate aggregation options.
 AggregateOption() *options.AggregateOptions
 ```
 
+### TxOption
+
+Generate transaction option with majority write and snapshot read.
+
+```go
+AggregateOption() *options.AggregateOptions
+```
+
 ### Array
 
 Generate `primitive.A` from parameters.
@@ -150,7 +158,7 @@ type Person struct{
 }
 
 // override methods
-func (this Person) IsDeletable() bool{
+func (me Person) IsDeletable() bool{
     return true
 }
 ```
@@ -161,35 +169,35 @@ func (this Person) IsDeletable() bool{
 // IsEditable check if document is editable
 //
 // by default returns true
-func (this Model) IsEditable() bool {}
+func (me Model) IsEditable() bool {}
 
 // IsDeletable check if document is deletable
 //
 // by default returns false
-func (this Model) IsDeletable() bool {}
+func (me Model) IsDeletable() bool {}
 
 // BeforeInsert function to call before insert
-func (this *Model) BeforeInsert() {}
+func (me *Model) BeforeInsert() {}
 
 // AfterInsert function to call after insert
-func (this Model) AfterInsert() {}
+func (me Model) AfterInsert(ctx context.Context) {}
 
 // BeforeUpdate function to call before update
-func (this *Model) BeforeUpdate() {}
+func (me *Model) BeforeUpdate() {}
 
 // AfterUpdate function to call after update
-func (this Model) AfterUpdate() {}
+func (me Model) AfterUpdate(ctx context.Context) {}
 
 // BeforeDelete function to call before delete
-func (this *Model) BeforeDelete() {}
+func (me *Model) BeforeDelete() {}
 
 // AfterDelete function to call after delete
-func (this Model) AfterDelete() {}
+func (me Model) AfterDelete(ctx context.Context) {}
 
 // Cleanup document before save
 //
 // e.g set relation document to nil for ignore saving
-func (this *Model) Cleanup() {}
+func (me *Model) Cleanup() {}
 ```
 
 ### Required Methods
@@ -505,7 +513,7 @@ pipe.Lookup("users", "user_id", "_id", "user")
 
 #### Unwrap
 
-Get first item of array and insert to doc using $addFields stage. When using lookup result returns as array, use this helper to unwrap lookup result as field.
+Get first item of array and insert to doc using $addFields stage. When using lookup result returns as array, use me helper to unwrap lookup result as field.
 
 ```go
 // Signature:
