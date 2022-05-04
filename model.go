@@ -35,7 +35,7 @@ func (me Model) AfterInsert(ctx context.Context) {}
 func (me *Model) BeforeUpdate() {}
 
 // AfterUpdate function to call after update
-func (me Model) AfterUpdate(ctx context.Context) {}
+func (me Model) AfterUpdate(old interface{}, ctx context.Context) {}
 
 // BeforeDelete function to call before delete
 func (me *Model) BeforeDelete() {}
