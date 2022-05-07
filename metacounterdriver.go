@@ -26,7 +26,9 @@ func (mc *metaCounter) Add(_col string, _meta string, id *primitive.ObjectID, am
 			return mc
 		}
 	}
-	mc.Data[_col] = append(mc.Data[_col], meta{Meta: _meta, ID: *id, Amount: amount})
+	if id != nil {
+		mc.Data[_col] = append(mc.Data[_col], meta{Meta: _meta, ID: *id, Amount: amount})
+	}
 	return mc
 }
 
