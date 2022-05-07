@@ -18,7 +18,7 @@ func (mc *metaCounter) addCol(col string) {
 	}
 }
 
-func (mc *metaCounter) Add(_col string, _meta string, id *primitive.ObjectID, amount int) MtCounter {
+func (mc *metaCounter) Add(_col string, _meta string, id *primitive.ObjectID, amount int) MetaCounter {
 	if id != nil {
 		mc.addCol(_col)
 		for i, mt := range mc.Data[_col] {
@@ -32,17 +32,17 @@ func (mc *metaCounter) Add(_col string, _meta string, id *primitive.ObjectID, am
 	return mc
 }
 
-func (mc *metaCounter) Result() []MetaQuery {
-	res := make([]MetaQuery, 0)
-	ign := make(map[string]map[string]int)
+func (mc *metaCounter) Build() []MetaCounterResult {
+	result := make([]MetaCounterResult, 0)
+	ignores := make(map[string]map[string]int)
 	addIgnore := func(_col, _meta string, amount int) {
-		if _, ok := ign[_col]; !ok {
-			ign[_col] = make(map[string]int)
+		if _, ok := ignores[_col]; !ok {
+			ignores[_col] = make(map[string]int)
 		}
-		ign[_col][_meta] = amount
+		ignores[_col][_meta] = amount
 	}
 	isAdded := func(_col, _meta string, amount int) bool {
-		for k, i := range ign {
+		for k, i := range ignores {
 			if k == _col {
 				for _k, _a := range i {
 					if _k == _meta && _a == amount {
@@ -65,14 +65,14 @@ func (mc *metaCounter) Result() []MetaQuery {
 	for _col, _meta := range mc.Data {
 		for _, m := range _meta {
 			if m.Amount != 0 && !isAdded(_col, m.Meta, m.Amount) {
-				res = append(res, MetaQuery{
+				result = append(result, MetaCounterResult{
 					Col:    _col,
 					Ids:    foundIds(m.Meta, m.Amount, _meta),
-					Update: map[string]int{m.Meta: m.Amount},
+					Values: map[string]int{m.Meta: m.Amount},
 				})
 				addIgnore(_col, m.Meta, m.Amount)
 			}
 		}
 	}
-	return res
+	return result
 }

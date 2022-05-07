@@ -2,16 +2,16 @@ package mongoutils
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
-type MtCounter interface {
+type MetaCounter interface {
 	// Add new meta
-	Add(_col, _meta string, id *primitive.ObjectID, amount int) MtCounter
-	// Result get combined meta with query
-	Result() []MetaQuery
+	Add(_col, _meta string, id *primitive.ObjectID, amount int) MetaCounter
+	// Build get combined meta with query
+	Build() []MetaCounterResult
 }
 
-type MetaQuery struct {
+type MetaCounterResult struct {
 	Col string
 	Ids []primitive.ObjectID
 	// data to update
-	Update map[string]int
+	Values map[string]int
 }

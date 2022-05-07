@@ -645,20 +645,20 @@ mCounter.Add("customers", "rel", id1, 4)
 mCounter.Add("customers", "rel", id2, 3)
 mCounter.Add("customers", "rel", id2, 1)
 mCounter.Add("customers", "rel", id3, 4)
-fmt.Println(mCounter.Result())
+fmt.Println(mCounter.Build())
 // -> 
 // [
 //   {
 //     "Col": "services",
 //     "Ids": ["62763152a01b7d275ef58e00"],
-//     "Update": {
+//     "Values": {
 //       "relations": 3
 //     }
 //   },
 //   {
 //     "Col": "services",
 //     "Ids": ["62763152a01b7d275ef58e01"],
-//     "Update": {
+//     "Values": {
 //       "total": 2
 //     }
 //   },
@@ -669,9 +669,41 @@ fmt.Println(mCounter.Result())
 //       "62763152a01b7d275ef58e01",
 //       "62763152a01b7d275ef58e02"
 //     ],
-//     "Update": {
+//     "Values": {
 //       "rel": 4
 //     }
 //   }
+// ]
+```
+
+## MetaSetter
+
+meta setter builder for mongo docs.
+
+```go
+import "github.com/bopher/mongoutils"
+setter := mongoutils.NewMetaSetter()
+setter.Add("test", "activity", id1, date)
+setter.Add("test", "activity", nil, date) // ignored
+setter.Add("test", "activity", id2, date)
+setter.Add("test", "activity", id3, date) // override next line
+setter.Add("test", "activity", id3, nil) // nil used
+fmt.Println(setter.Build())
+// -> 
+// [
+//   {
+//     "Col": "test",
+//     "Ids": ["6276509942d11385d52b7ae2", "6276509942d11385d52b7ae3"],
+//     "Values": {
+//       "activity": "2022-05-07 10:57:29.6228877 +0000 UTC"
+//     }
+//   },
+//   {
+//     "Col": "test",
+//     "Ids": ["6276509942d11385d52b7ae4"],
+//     "Values": {
+//       "activity": nil
+//     }
+//   },
 // ]
 ```

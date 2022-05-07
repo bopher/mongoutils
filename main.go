@@ -17,10 +17,17 @@ func NewDoc() MongoDoc {
 	return new(mDoc)
 }
 
-// NewMetaCounter new mongo metacounter
-func NewMetaCounter() MtCounter {
+// NewMetaCounter new mongo meta counter
+func NewMetaCounter() MetaCounter {
 	res := new(metaCounter)
 	res.Data = make(map[string][]meta)
+	return res
+}
+
+// NewMetaSetter new mongo meta setter
+func NewMetaSetter() MetaSetter {
+	res := new(metaSetter)
+	res.Data = make(map[string][]metaV)
 	return res
 }
 
