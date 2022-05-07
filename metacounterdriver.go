@@ -18,15 +18,15 @@ func (mc *metaCounter) addCol(col string) {
 	}
 }
 
-func (mc *metaCounter) Add(_col string, _meta string, id primitive.ObjectID, amount int) MtCounter {
+func (mc *metaCounter) Add(_col string, _meta string, id *primitive.ObjectID, amount int) MtCounter {
 	mc.addCol(_col)
 	for i, mt := range mc.Data[_col] {
-		if mt.ID == id && mt.Meta == _meta {
+		if id != nil && mt.ID == *id && mt.Meta == _meta {
 			mc.Data[_col][i].Amount += amount
 			return mc
 		}
 	}
-	mc.Data[_col] = append(mc.Data[_col], meta{Meta: _meta, ID: id, Amount: amount})
+	mc.Data[_col] = append(mc.Data[_col], meta{Meta: _meta, ID: *id, Amount: amount})
 	return mc
 }
 
@@ -62,7 +62,7 @@ func (mc *metaCounter) Result() []MetaQuery {
 	}
 	for _col, _meta := range mc.Data {
 		for _, m := range _meta {
-			if !isAdded(_col, m.Meta, m.Amount) {
+			if m.Amount != 0 && !isAdded(_col, m.Meta, m.Amount) {
 				res = append(res, MetaQuery{
 					Col:    _col,
 					Ids:    foundIds(m.Meta, m.Amount, _meta),

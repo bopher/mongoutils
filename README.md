@@ -639,6 +639,8 @@ mCounter.Add("services", "relations", id1, 1)
 mCounter.Add("services", "total", id2, 1)
 mCounter.Add("services", "total", id2, 1)
 mCounter.Add("services", "relations", id3, 3)
+mCounter.Add("services", "relations", nil, 3) // ignored
+mCounter.Add("services", "relations", id3, -3) // ignored because of 0
 mCounter.Add("customers", "rel", id1, 4)
 mCounter.Add("customers", "rel", id2, 3)
 mCounter.Add("customers", "rel", id2, 1)
@@ -648,19 +650,14 @@ fmt.Println(mCounter.Result())
 // [
 //   {
 //     "Col": "services",
-//     "Ids": [
-//       "62763152a01b7d275ef58e00",
-//       "62763152a01b7d275ef58e02"
-//     ],
+//     "Ids": ["62763152a01b7d275ef58e00"],
 //     "Update": {
 //       "relations": 3
 //     }
 //   },
 //   {
 //     "Col": "services",
-//     "Ids": [
-//       "62763152a01b7d275ef58e01"
-//     ],
+//     "Ids": ["62763152a01b7d275ef58e01"],
 //     "Update": {
 //       "total": 2
 //     }
