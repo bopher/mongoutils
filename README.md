@@ -626,3 +626,55 @@ Generate mongo pipeline.
 ```go
 Build() mongo.Pipeline
 ```
+
+## MetaCounter
+
+meta counter builder for mongo docs.
+
+```go
+import "github.com/bopher/mongoutils"
+mCounter := mongoutils.NewMetaCounter()
+mCounter.Add("services", "relations", id1, 2)
+mCounter.Add("services", "relations", id1, 1)
+mCounter.Add("services", "total", id2, 1)
+mCounter.Add("services", "total", id2, 1)
+mCounter.Add("services", "relations", id3, 3)
+mCounter.Add("customers", "rel", id1, 4)
+mCounter.Add("customers", "rel", id2, 3)
+mCounter.Add("customers", "rel", id2, 1)
+mCounter.Add("customers", "rel", id3, 4)
+fmt.Println(mCounter.Result())
+// -> 
+// [
+//   {
+//     "Col": "services",
+//     "Ids": [
+//       "62763152a01b7d275ef58e00",
+//       "62763152a01b7d275ef58e02"
+//     ],
+//     "Update": {
+//       "relations": 3
+//     }
+//   },
+//   {
+//     "Col": "services",
+//     "Ids": [
+//       "62763152a01b7d275ef58e01"
+//     ],
+//     "Update": {
+//       "total": 2
+//     }
+//   },
+//   {
+//     "Col": "customers",
+//     "Ids": [
+//       "62763152a01b7d275ef58e00",
+//       "62763152a01b7d275ef58e01",
+//       "62763152a01b7d275ef58e02"
+//     ],
+//     "Update": {
+//       "rel": 4
+//     }
+//   }
+// ]
+```

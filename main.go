@@ -17,6 +17,13 @@ func NewDoc() MongoDoc {
 	return new(mDoc)
 }
 
+// NewMetaCounter new mongo metacounter
+func NewMetaCounter() MtCounter {
+	res := new(metaCounter)
+	res.Data = make(map[string][]meta)
+	return res
+}
+
 // ParseObjectID parse object id from string
 func ParseObjectID(id string) *primitive.ObjectID {
 	if oId, err := primitive.ObjectIDFromHex(id); err == nil && !oId.IsZero() {
