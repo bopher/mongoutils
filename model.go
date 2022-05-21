@@ -26,19 +26,19 @@ func (me Model) IsDeletable() bool {
 }
 
 // BeforeInsert function to call before insert
-func (me *Model) BeforeInsert() {}
+func (me *Model) BeforeInsert(ctx context.Context) {}
 
 // AfterInsert function to call after insert
 func (me Model) AfterInsert(ctx context.Context) {}
 
 // BeforeUpdate function to call before update
-func (me *Model) BeforeUpdate() {}
+func (me *Model) BeforeUpdate(ctx context.Context) {}
 
 // AfterUpdate function to call after update
 func (me Model) AfterUpdate(old interface{}, ctx context.Context) {}
 
 // BeforeDelete function to call before delete
-func (me *Model) BeforeDelete() {}
+func (me *Model) BeforeDelete(ctx context.Context) {}
 
 // AfterDelete function to call after delete
 func (me Model) AfterDelete(ctx context.Context) {}
