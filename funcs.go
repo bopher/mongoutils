@@ -5,14 +5,14 @@ import (
 )
 
 // Array generate primitive.A
-func Array(args ...interface{}) primitive.A {
+func Array(args ...any) primitive.A {
 	return args
 }
 
 // Map generate primitive.M
 //
 // Args count must even
-func Map(args ...interface{}) primitive.M {
+func Map(args ...any) primitive.M {
 	if len(args)%2 == 0 {
 		res := make(primitive.M, len(args)/2)
 		for i := 0; i < len(args); i++ {
@@ -30,7 +30,7 @@ func Map(args ...interface{}) primitive.M {
 // Maps generate []primitive.M
 //
 // Args count must even
-func Maps(args ...interface{}) []primitive.M {
+func Maps(args ...any) []primitive.M {
 	res := make([]primitive.M, 0)
 	if len(args)%2 == 0 {
 		for i := 0; i < len(args); i++ {
@@ -48,7 +48,7 @@ func Maps(args ...interface{}) []primitive.M {
 //
 // Args count must even
 // Example: Doc("_id", 1, "name", "John")
-func Doc(args ...interface{}) primitive.D {
+func Doc(args ...any) primitive.D {
 	res := make([]primitive.E, 0)
 	if len(args)%2 == 0 {
 		for i := 0; i < len(args); i++ {
@@ -79,27 +79,27 @@ func RegexFor(k string, pattern string, opt string) primitive.M {
 // In generate $in map
 //
 // {k: {$in: v}}
-func In(k string, v ...interface{}) primitive.M {
+func In(k string, v ...any) primitive.M {
 	return primitive.M{k: primitive.M{"$in": v}}
 }
 
 // Set generate simple set map
 //
 // {$set: v}
-func Set(v interface{}) primitive.M {
+func Set(v any) primitive.M {
 	return primitive.M{"$set": v}
 }
 
 // SetNested generate nested set map
 //
 // {$set: {k: v}}
-func SetNested(k string, v interface{}) primitive.M {
+func SetNested(k string, v any) primitive.M {
 	return primitive.M{"$set": primitive.M{k: v}}
 }
 
 // Match generate nested set map
 //
 // {$match: v}
-func Match(v interface{}) primitive.M {
+func Match(v any) primitive.M {
 	return primitive.M{"$match": v}
 }

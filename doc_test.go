@@ -7,7 +7,7 @@ import (
 	"github.com/bopher/mongoutils"
 )
 
-func pretty(v interface{}) (string, error) {
+func pretty(v any) (string, error) {
 	bytes, err := json.Marshal(v)
 	return string(bytes), err
 }

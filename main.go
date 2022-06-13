@@ -45,7 +45,7 @@ func IsValidObjectId(id *primitive.ObjectID) bool {
 }
 
 // FindOption generate find option with sorts params
-func FindOption(sort interface{}, skip int64, limit int64) *options.FindOptions {
+func FindOption(sort any, skip int64, limit int64) *options.FindOptions {
 	opt := new(options.FindOptions)
 	opt.SetAllowDiskUse(true)
 	opt.SetSkip(skip)

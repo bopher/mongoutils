@@ -7,7 +7,7 @@ import (
 type metaV struct {
 	ID    primitive.ObjectID
 	Meta  string
-	Value interface{}
+	Value any
 }
 
 type metaSetter struct {
@@ -20,7 +20,7 @@ func (ms *metaSetter) addCol(col string) {
 	}
 }
 
-func (ms *metaSetter) Add(_col, _meta string, id *primitive.ObjectID, value interface{}) MetaSetter {
+func (ms *metaSetter) Add(_col, _meta string, id *primitive.ObjectID, value any) MetaSetter {
 	if id != nil {
 		ms.addCol(_col)
 		for i, mt := range ms.Data[_col] {
@@ -36,14 +36,14 @@ func (ms *metaSetter) Add(_col, _meta string, id *primitive.ObjectID, value inte
 
 func (ms *metaSetter) Build() []MetaSetterResult {
 	result := make([]MetaSetterResult, 0)
-	ignores := make(map[string]map[string]interface{})
-	addIgnore := func(_col, _meta string, value interface{}) {
+	ignores := make(map[string]map[string]any)
+	addIgnore := func(_col, _meta string, value any) {
 		if _, ok := ignores[_col]; !ok {
-			ignores[_col] = make(map[string]interface{})
+			ignores[_col] = make(map[string]any)
 		}
 		ignores[_col][_meta] = value
 	}
-	isAdded := func(_col, _meta string, value interface{}) bool {
+	isAdded := func(_col, _meta string, value any) bool {
 		for k, i := range ignores {
 			if k == _col {
 				for _k, v := range i {
@@ -55,7 +55,7 @@ func (ms *metaSetter) Build() []MetaSetterResult {
 		}
 		return false
 	}
-	foundIds := func(_meta string, value interface{}, data []metaV) []primitive.ObjectID {
+	foundIds := func(_meta string, value any, data []metaV) []primitive.ObjectID {
 		ids := make([]primitive.ObjectID, 0)
 		for _, m := range data {
 			if m.Meta == _meta && value == m.Value {
@@ -70,7 +70,7 @@ func (ms *metaSetter) Build() []MetaSetterResult {
 				result = append(result, MetaSetterResult{
 					Col:    _col,
 					Ids:    foundIds(m.Meta, m.Value, _meta),
-					Values: map[string]interface{}{m.Meta: m.Value},
+					Values: map[string]any{m.Meta: m.Value},
 				})
 				addIgnore(_col, m.Meta, m.Value)
 			}

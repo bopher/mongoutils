@@ -13,13 +13,13 @@ func (me *mPipe) Add(cb func(d MongoDoc) MongoDoc) MongoPipeline {
 	return me
 }
 
-func (me *mPipe) Match(filters interface{}) MongoPipeline {
+func (me *mPipe) Match(filters any) MongoPipeline {
 	return me.Add(func(d MongoDoc) MongoDoc {
 		return d.Add("$match", filters)
 	})
 }
 
-func (me *mPipe) In(key string, v interface{}) MongoPipeline {
+func (me *mPipe) In(key string, v any) MongoPipeline {
 	return me.Add(func(d MongoDoc) MongoDoc {
 		return d.Nested(key, "$in", v)
 	})
@@ -43,7 +43,7 @@ func (me *mPipe) Skip(skip int64) MongoPipeline {
 	return me
 }
 
-func (me *mPipe) Sort(sorts interface{}) MongoPipeline {
+func (me *mPipe) Sort(sorts any) MongoPipeline {
 	if sorts != nil {
 		me.Add(func(d MongoDoc) MongoDoc {
 			return d.Add("$sort", sorts)
@@ -106,7 +106,7 @@ func (me *mPipe) Group(cb func(d MongoDoc) MongoDoc) MongoPipeline {
 	})
 }
 
-func (me *mPipe) ReplaceRoot(v interface{}) MongoPipeline {
+func (me *mPipe) ReplaceRoot(v any) MongoPipeline {
 	return me.Add(func(d MongoDoc) MongoDoc {
 		return d.Doc("$replaceRoot", func(d MongoDoc) MongoDoc {
 			return d.Add("newRoot", v)
@@ -114,7 +114,7 @@ func (me *mPipe) ReplaceRoot(v interface{}) MongoPipeline {
 	})
 }
 
-func (me *mPipe) MergeRoot(fields ...interface{}) MongoPipeline {
+func (me *mPipe) MergeRoot(fields ...any) MongoPipeline {
 	return me.Add(func(d MongoDoc) MongoDoc {
 		return d.Doc("$replaceRoot", func(d MongoDoc) MongoDoc {
 			return d.Nested("newRoot", "$mergeObjects", fields)

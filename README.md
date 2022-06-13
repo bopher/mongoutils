@@ -25,7 +25,7 @@ IsValidObjectId(id *primitive.ObjectID) bool
 Generate find option with sorts params.
 
 ```go
-FindOption(sort interface{}, skip int64, limit int64) *options.FindOptions
+FindOption(sort any, skip int64, limit int64) *options.FindOptions
 ```
 
 ### AggregateOption
@@ -49,7 +49,7 @@ AggregateOption() *options.AggregateOptions
 Generate `primitive.A` from parameters.
 
 ```go
-Array(args ...interface{}) primitive.A
+Array(args ...any) primitive.A
 ```
 
 ### Map
@@ -58,7 +58,7 @@ Generate `primitive.M` from parameters. Parameters count must be even.
 
 ```go
 // Signature:
-Map(args ...interface{}) primitive.M
+Map(args ...any) primitive.M
 
 // Example:
 mongoutils.Map("name", "John", "age", 23) // { "name": "John", "age": 23 }
@@ -70,7 +70,7 @@ Generate `[]primitive.M` from parameters. Parameters count must be even.
 
 ```go
 // Signature:
-Maps(args ...interface{}) []primitive.M
+Maps(args ...any) []primitive.M
 
 // Example:
 mongoutils.Maps("name", "John", "age", 23) // [{ "name": "John" }, { "age": 23 }]
@@ -82,7 +82,7 @@ Generate primitive.D from parameters. Parameters count must be even.
 
 ```go
 // Signature:
-Doc(args ...interface{}) primitive.D
+Doc(args ...any) primitive.D
 
 // Example:
 mongoutils.Doc("name", "John", "age", 23) // { "name": "John", "age": 23 }
@@ -117,7 +117,7 @@ mongoutils.RegexFor("name", "John.*", "i") // { "name": { pattern: "John.*", opt
 Generate $in map `{k: {$in: v}}`.
 
 ```go
-In(k string, v ...interface{}) primitive.M
+In(k string, v ...any) primitive.M
 ```
 
 ### Set
@@ -125,7 +125,7 @@ In(k string, v ...interface{}) primitive.M
 Generate simple set map  `{$set: v}`.
 
 ```go
-Set(v interface{}) primitive.M
+Set(v any) primitive.M
 ```
 
 ### SetNested
@@ -133,7 +133,7 @@ Set(v interface{}) primitive.M
 Generate nested set map `{$set: {k: v}}`.
 
 ```go
-SetNested(k string, v interface{}) primitive.M
+SetNested(k string, v any) primitive.M
 ```
 
 ### Match
@@ -141,7 +141,7 @@ SetNested(k string, v interface{}) primitive.M
 Generate nested set map `{$match: v}`.
 
 ```go
-Match(v interface{}) primitive.M
+Match(v any) primitive.M
 ```
 
 ## Base Model
@@ -186,7 +186,7 @@ func (me Model) AfterInsert(ctx context.Context) {}
 func (me *Model) BeforeUpdate(ctx context.Context) {}
 
 // AfterUpdate function to call after update
-func (me Model) AfterUpdate(old interface{},ctx context.Context) {}
+func (me Model) AfterUpdate(old any,ctx context.Context) {}
 
 // BeforeDelete function to call before delete
 func (me *Model) BeforeDelete(ctx context.Context) {}
@@ -233,7 +233,7 @@ Add new element.
 
 ```go
 // Signature:
-Add(k string, v interface{}) MongoDoc
+Add(k string, v any) MongoDoc
 
 // Example:
 doc.Add("name", "Kim")
@@ -261,7 +261,7 @@ Add new element with array value.
 
 ```go
 // Signature:
-Array(k string, v ...interface{}) MongoDoc
+Array(k string, v ...any) MongoDoc
 
 // Example:
 doc.Array("skills", "javascript", "golang") // -> { "skills": ["javascript", "golang"] }
@@ -288,7 +288,7 @@ Add new nested element.
 
 ```go
 // Signature:
-Nested(root string, k string, v interface{}) MongoDoc
+Nested(root string, k string, v any) MongoDoc
 
 // Example:
 doc.Nested("$set", "name", "Jack") // { "$set": { "name": "Jack" } }
@@ -317,7 +317,7 @@ Add new nested element with array value.
 
 ```go
 // Signature:
-NestedArray(root string, k string, v ...interface{}) MongoDoc
+NestedArray(root string, k string, v ...any) MongoDoc
 
 // Example:
 doc.NestedArray("skill", "$in", "mongo", "golang") // -> { "skill": { "$in": ["mongo", "golang"] } }
@@ -419,7 +419,7 @@ Add $match stage.
 
 ```go
 // Signature:
-Match(filters interface{}) MongoPipeline
+Match(filters any) MongoPipeline
 
 // Example:
 pipe.Match(v)
@@ -431,7 +431,7 @@ Add $in stage.
 
 ```go
 // Signature:
-In(key string, v interface{}) MongoPipeline
+In(key string, v any) MongoPipeline
 
 // Example:
 pipe.In("status", statuses)
@@ -467,7 +467,7 @@ Add $sort stage (ignore nil value).
 
 ```go
 // Signature:
-Sort(sorts interface{}) MongoPipeline
+Sort(sorts any) MongoPipeline
 
 // Example:
 pipe.Sort(primitive.M{"username": 1})
@@ -578,7 +578,7 @@ Add $replaceRoot stage.
 
 ```go
 // Signature:
-ReplaceRoot(v interface{}) MongoPipeline
+ReplaceRoot(v any) MongoPipeline
 
 // Example:
 pipe.ReplaceRoot("$my_root")
@@ -591,7 +591,7 @@ Add $replaceRoot stage with $mergeObjects operator.
 
 ```go
 // Signature:
-MergeRoot(fields ...interface{}) MongoPipeline
+MergeRoot(fields ...any) MongoPipeline
 
 // Example:
 pipe.MergeRoot("$my_root", "$$ROOT")
